@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">Employee Example</string>
+
+    <string name="save_employee">Save Employee</string>
+    <string name="delete_employee">Delete Employee</string>
+    <string name="enter_employee_name">Enter employee name</string>
+    <string name="employee_photo">Employee Photo</string>
+    <string name="gender">Gender</string>
+    <string name="role">Role</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="other">Other</string>
+    <string name="age">Age</string>
+
+    <string name="years">%1$d years</string>
+</resources>

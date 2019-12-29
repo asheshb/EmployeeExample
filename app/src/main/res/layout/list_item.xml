@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/employee_photo"
+        android:layout_width="0dp"
+        android:layout_height="80dp"
+        android:layout_marginTop="8dp"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/employee_photo"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="@+id/employee_role"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        app:srcCompat="@drawable/blank_photo"
+        tools:srcCompat="@drawable/blank_photo" />
+
+    <TextView
+        android:id="@+id/employee_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/employee_photo"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="John Doe" />
+
+    <TextView
+        android:id="@+id/employee_role"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/employee_photo"
+        app:layout_constraintTop_toBottomOf="@+id/employee_name"
+        tools:text="Manager" />
+
+    <TextView
+        android:id="@+id/employee_age"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintStart_toStartOf="@+id/employee_role"
+        app:layout_constraintTop_toBottomOf="@+id/employee_role"
+        tools:text="42 years" />
+
+    <TextView
+        android:id="@+id/employee_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginLeft="24dp"
+        app:layout_constraintStart_toEndOf="@+id/employee_age"
+        app:layout_constraintTop_toTopOf="@+id/employee_age"
+        tools:text="Male" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
