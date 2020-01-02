@@ -2,7 +2,6 @@ package com.example.employeeexample.ui
 
 import android.app.Activity
 import android.content.Intent
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
@@ -151,23 +150,23 @@ class EmployeeListFragment : Fragment() {
                 ".csv",
                 filesDir
             )
-            csvFile?.printWriter()?.use { out -> out.println("test") }
+            csvFile?.printWriter()?.use { out ->
+                val employees = viewModel.getEmployeeList()
+                if(employees.isNotEmpty()){
+                    employees.forEach{
+                        out.println(it.name + "," + it.role + "," + it.age + "," + it.gender)
+                    }
+                }
+            }
         }
         withContext(Dispatchers.Main){
             csvFile?.let{
-                addFile(it.toString())
                 val uri = FileProvider.getUriForFile(
                     activity!!, BuildConfig.APPLICATION_ID + ".fileprovider",
                     it)
                 launchFile(uri, "csv")
             }
         }
-
-    }
-
-    private fun addFile(filePath: String) {
-        MediaScannerConnection.scanFile(activity!!, arrayOf(filePath), null,
-            null)
     }
 
     private fun launchFile(uri: Uri, ext: String){

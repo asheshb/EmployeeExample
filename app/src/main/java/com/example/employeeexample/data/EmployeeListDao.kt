@@ -15,4 +15,7 @@ interface EmployeeListDao{
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertEmployees(employees: List<Employee>)
 
+    @Query("SELECT * FROM employee ORDER BY name")
+    suspend fun getEmployeeList(): List<Employee>
+
 }

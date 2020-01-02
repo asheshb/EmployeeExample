@@ -15,5 +15,9 @@ class EmployeeListRepository(context: Application){
         employeeListDao.insertEmployees(employees)
     }
 
+    suspend fun getEmployeeList(): List<Employee>{
+        return employeeListDao.getEmployeeList()
+    }
+
 
 }

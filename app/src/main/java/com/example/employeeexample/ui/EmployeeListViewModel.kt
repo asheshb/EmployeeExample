@@ -16,4 +16,8 @@ class EmployeeListViewModel(application: Application): AndroidViewModel(applicat
         repo.insertEmployees(employees)
     }
 
+    suspend fun getEmployeeList(): List<Employee>{
+        return repo.getEmployeeList()
+    }
+
 }

@@ -5,7 +5,6 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -13,7 +12,6 @@ import android.provider.MediaStore
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.MimeTypeMap
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
@@ -228,7 +226,6 @@ class EmployeeDetailFragment : Fragment() {
                     val uri = Uri.fromFile(file)
                     employee_photo.setImageURI(uri)
                     employee_photo.tag = uri.toString()
-                    addFile(file.absolutePath)
                 }
                 GALLERY_PHOTO_REQUEST ->{
                     val photoFile: File? = try {
@@ -268,11 +265,4 @@ class EmployeeDetailFragment : Fragment() {
         startActivityForResult(pickPhotoIntent, GALLERY_PHOTO_REQUEST)
 
     }
-
-    private fun addFile(filePath: String) {
-        val mimeType = MimeTypeMap.getFileExtensionFromUrl(filePath)
-        MediaScannerConnection.scanFile(activity!!, arrayOf(filePath), arrayOf(mimeType),
-            null)
-    }
-
 }
