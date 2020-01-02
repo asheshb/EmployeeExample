@@ -1,6 +1,7 @@
 package com.example.employeeexample.ui
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
@@ -30,7 +31,7 @@ import java.util.*
 
 
 const val READ_FILE_REQUEST = 1
-
+const val LATEST_EMPLOYEE_NAME_KEY = "LATEST_EMPLOYEE_NAME_KEY"
 class EmployeeListFragment : Fragment() {
 
     private lateinit var viewModel: EmployeeListViewModel
@@ -99,6 +100,18 @@ class EmployeeListFragment : Fragment() {
                     readFileIntent.resolveActivity(activity!!.packageManager)?.also {
                         startActivityForResult(readFileIntent, READ_FILE_REQUEST)
                     }
+                }
+                true
+            }
+            R.id.menu_latest_employee_name -> {
+                val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return true
+                val name = sharedPref.getString(LATEST_EMPLOYEE_NAME_KEY, "")
+                if(!name.isNullOrEmpty()){
+                    Toast.makeText(activity!!, getString(R.string.latest_employee, name),
+                        Toast.LENGTH_SHORT).show()
+                } else{
+                    Toast.makeText(activity!!, getString(R.string.no_employee_added),
+                        Toast.LENGTH_SHORT).show()
                 }
                 true
             }

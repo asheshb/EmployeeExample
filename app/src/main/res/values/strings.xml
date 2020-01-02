@@ -17,4 +17,7 @@
 
     <string name="years">%1$d years</string>
     <string name="no_app_csv">No app to read CSV file</string>
+    <string name="latest_employee_name">Latest employee name</string>
+    <string name="latest_employee">The name of latest employee is: %1$s</string>
+    <string name="no_employee_added">No employee added yet</string>
 </resources>
