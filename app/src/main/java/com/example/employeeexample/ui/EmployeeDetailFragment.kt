@@ -10,9 +10,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
@@ -47,6 +45,8 @@ class EmployeeDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
 
         viewModel = ViewModelProviders.of(this)
             .get(EmployeeDetailViewModel::class.java)
@@ -271,5 +271,40 @@ class EmployeeDetailFragment : Fragment() {
         val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         startActivityForResult(pickPhotoIntent, GALLERY_PHOTO_REQUEST)
 
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.detail_menu, menu)
+    }
+
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_share_data -> {
+                shareEmployeeData()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    private fun shareEmployeeData(){
+        val name = employee_name.text.toString()
+        val role = employee_role.selectedItem.toString()
+        val age = employee_age.selectedItemPosition + 18
+
+        val selectedStatusButton =  gender_group.findViewById<RadioButton>(gender_group.checkedRadioButtonId)
+        val gender = selectedStatusButton.text
+
+        val shareText = getString(R.string.share_text, name,role,age,gender)
+
+        val sendIntent: Intent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, shareText)
+            type = "text/plain"
+        }
+
+        val shareIntent = Intent.createChooser(sendIntent, null)
+        startActivity(shareIntent)
     }
 }

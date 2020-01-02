@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Employee Example</string>
 
@@ -20,4 +21,6 @@
     <string name="latest_employee_name">Latest employee name</string>
     <string name="latest_employee">The name of latest employee is: %1$s</string>
     <string name="no_employee_added">No employee added yet</string>
+    <string name="share_employee_data">Share Employee data</string>
+    <string name="share_text">Employee Data\nName: %1$s\nRole: %2$s\nAge: %3$d\nGender: %4$s</string>
 </resources>
