@@ -12,4 +12,8 @@ class EmployeeListViewModel(application: Application): AndroidViewModel(applicat
 
     val employees: LiveData<List<Employee>> = repo.getEmployees()
 
+    suspend fun insertEmployees(employees: List<Employee>){
+        repo.insertEmployees(employees)
+    }
+
 }

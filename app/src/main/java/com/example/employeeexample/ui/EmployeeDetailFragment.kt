@@ -5,20 +5,21 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
+import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.MimeTypeMap
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.employeeexample.BuildConfig
@@ -27,10 +28,7 @@ import com.example.employeeexample.data.Employee
 import com.example.employeeexample.data.Gender
 import com.example.employeeexample.data.Role
 import com.google.android.material.snackbar.Snackbar
-
-
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
-import kotlinx.android.synthetic.main.fragment_employee_detail.employee_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -74,6 +72,9 @@ class EmployeeDetailFragment : Fragment() {
         val ages = mutableListOf<Int>()
         for(i in 18 until 81){ ages.add(i) }
         employee_age.adapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, ages)
+
+        employee_photo.setImageResource(R.drawable.blank_photo)
+        employee_photo.tag = ""
 
         val id = EmployeeDetailFragmentArgs.fromBundle(requireArguments()).id
         viewModel.setEmployeeId(id)
@@ -223,9 +224,11 @@ class EmployeeDetailFragment : Fragment() {
         if(resultCode == RESULT_OK){
             when(requestCode){
                 CAMERA_PHOTO_REQUEST -> {
-                    val uri = Uri.fromFile(File(selectedPhotoPath))
+                    val file = File(selectedPhotoPath)
+                    val uri = Uri.fromFile(file)
                     employee_photo.setImageURI(uri)
                     employee_photo.tag = uri.toString()
+                    addFile(file.absolutePath)
                 }
                 GALLERY_PHOTO_REQUEST ->{
                     val photoFile: File? = try {
@@ -265,4 +268,11 @@ class EmployeeDetailFragment : Fragment() {
         startActivityForResult(pickPhotoIntent, GALLERY_PHOTO_REQUEST)
 
     }
+
+    private fun addFile(filePath: String) {
+        val mimeType = MimeTypeMap.getFileExtensionFromUrl(filePath)
+        MediaScannerConnection.scanFile(activity!!, arrayOf(filePath), arrayOf(mimeType),
+            null)
+    }
+
 }

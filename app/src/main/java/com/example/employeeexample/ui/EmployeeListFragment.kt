@@ -1,14 +1,33 @@
 package com.example.employeeexample.ui
 
+import android.app.Activity
+import android.content.Intent
+import android.media.MediaScannerConnection
+import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.webkit.MimeTypeMap
+import android.widget.Toast
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.employeeexample.BuildConfig
 import com.example.employeeexample.R
+import com.example.employeeexample.data.Employee
 import kotlinx.android.synthetic.main.fragment_employee_list.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.BufferedReader
+import java.io.File
+import java.io.InputStream
+import java.io.InputStreamReader
+import java.text.SimpleDateFormat
+import java.util.*
 
 
 const val READ_FILE_REQUEST = 1
@@ -19,6 +38,8 @@ class EmployeeListFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
+
+        setHasOptionsMenu(true)
 
         viewModel = ViewModelProviders.of(this)
             .get(EmployeeListViewModel::class.java)
@@ -59,6 +80,105 @@ class EmployeeListFragment : Fragment() {
         })
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.list_menu, menu)
+    }
 
 
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.menu_export_data -> {
+                GlobalScope.launch {
+                    exportEmployees()
+                }
+                true
+            }
+            R.id.menu_import_data -> {
+                Intent(Intent.ACTION_GET_CONTENT).also { readFileIntent ->
+                    readFileIntent.addCategory(Intent.CATEGORY_OPENABLE)
+                    readFileIntent.type = "text/*"
+                    readFileIntent.resolveActivity(activity!!.packageManager)?.also {
+                        startActivityForResult(readFileIntent, READ_FILE_REQUEST)
+                    }
+                }
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (resultCode == Activity.RESULT_OK) {
+            when (requestCode) {
+                READ_FILE_REQUEST -> {
+                    GlobalScope.launch{
+                        val resolver = activity!!.applicationContext.contentResolver
+                        resolver.openInputStream(data!!.data!!).use { stream ->
+                            stream?.let{
+                                withContext(Dispatchers.IO) {
+                                    parseCSVFile(stream)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private suspend fun parseCSVFile(stream: InputStream){
+        val employees = mutableListOf<Employee>()
+
+        BufferedReader(InputStreamReader(stream)).forEachLine {
+            val tokens = it.split(",")
+            employees.add(Employee(id = 0, name = tokens[0], role = tokens[1].toInt(),
+                age = tokens[2].toInt(), gender = tokens[3].toInt(), photo = ""))
+        }
+
+        if(employees.isNotEmpty()){
+            viewModel.insertEmployees(employees)
+        }
+    }
+
+    private suspend fun exportEmployees(){
+        var csvFile: File? = null
+        withContext(Dispatchers.IO) {
+            val timeStamp: String =
+                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+            val filesDir: File? = activity!!.getExternalFilesDir("Documents")
+            csvFile = File.createTempFile(
+                timeStamp,
+                ".csv",
+                filesDir
+            )
+            csvFile?.printWriter()?.use { out -> out.println("test") }
+        }
+        withContext(Dispatchers.Main){
+            csvFile?.let{
+                addFile(it.toString())
+                val uri = FileProvider.getUriForFile(
+                    activity!!, BuildConfig.APPLICATION_ID + ".fileprovider",
+                    it)
+                launchFile(uri, "csv")
+            }
+        }
+
+    }
+
+    private fun addFile(filePath: String) {
+        MediaScannerConnection.scanFile(activity!!, arrayOf(filePath), null,
+            null)
+    }
+
+    private fun launchFile(uri: Uri, ext: String){
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext)
+        val intent = Intent(Intent.ACTION_VIEW)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        intent.setDataAndType(uri, mimeType)
+        if(intent.resolveActivity(activity!!.packageManager) != null){
+            startActivity(intent)
+        } else{
+            Toast.makeText(activity!!, "No app to read CSV file", Toast.LENGTH_SHORT).show()
+        }
+    }
 }

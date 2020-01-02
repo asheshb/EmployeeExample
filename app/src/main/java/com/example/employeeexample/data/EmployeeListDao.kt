@@ -11,4 +11,8 @@ import androidx.room.Query
 interface EmployeeListDao{
     @Query("SELECT * FROM employee ORDER BY name")
     fun getEmployees(): LiveData<List<Employee>>
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertEmployees(employees: List<Employee>)
+
 }

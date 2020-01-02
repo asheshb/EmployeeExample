@@ -11,4 +11,9 @@ class EmployeeListRepository(context: Application){
     fun getEmployees(): LiveData<List<Employee>> =
         employeeListDao.getEmployees()
 
+    suspend fun insertEmployees(employees: List<Employee>){
+        employeeListDao.insertEmployees(employees)
+    }
+
+
 }
