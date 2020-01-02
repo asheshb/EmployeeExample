@@ -7,17 +7,6 @@
     tools:context=".ui.EmployeeDetailFragment">
 
     <TextView
-        android:id="@+id/gender_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
-        android:text="@string/gender"
-        app:layout_constraintEnd_toStartOf="@+id/gender_group"
-        app:layout_constraintTop_toTopOf="@+id/gender_group" />
-
-    <TextView
         android:id="@+id/employee_role_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -28,20 +17,9 @@
         app:layout_constraintStart_toEndOf="@+id/employee_photo"
         app:layout_constraintTop_toBottomOf="@+id/employee_name" />
 
-    <Button
-        android:id="@+id/delete_employee"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="@string/delete_employee"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toEndOf="@+id/save_employee"
-        app:layout_constraintTop_toBottomOf="@+id/gender_group" />
-
     <ImageView
         android:id="@+id/employee_photo"
-        android:layout_width="0dp"
+        android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_marginTop="8dp"
         android:adjustViewBounds="true"
@@ -76,7 +54,19 @@
         android:text="@string/save_employee"
         app:layout_constraintEnd_toStartOf="@+id/delete_employee"
         app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/photo_from_gallery"
+        app:layout_constraintStart_toStartOf="@+id/gender_group"
+        app:layout_constraintTop_toBottomOf="@+id/gender_group" />
+
+    <Button
+        android:id="@+id/delete_employee"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="@string/delete_employee"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/save_employee"
         app:layout_constraintTop_toBottomOf="@+id/gender_group" />
 
     <RadioGroup
@@ -85,7 +75,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:orientation="horizontal"
-        app:layout_constraintStart_toStartOf="@+id/employee_age"
+        app:layout_constraintStart_toStartOf="@+id/employee_age_label"
         app:layout_constraintTop_toBottomOf="@+id/employee_age">
 
         <RadioButton
@@ -99,16 +89,16 @@
             android:id="@+id/gender_female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:text="@string/female" />
 
         <RadioButton
             android:id="@+id/gender_other"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:layout_marginStart="16dp"
+            android:layout_marginLeft="16dp"
             android:layout_weight="1"
             android:text="@string/other" />
     </RadioGroup>
@@ -148,5 +138,27 @@
         app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toEndOf="@+id/employee_age_label"
         app:layout_constraintTop_toBottomOf="@+id/employee_role" />
+
+    <ImageButton
+        android:id="@+id/photo_from_camera"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:src="@android:drawable/ic_menu_camera"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/employee_photo" />
+
+    <ImageButton
+        android:id="@+id/photo_from_gallery"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginTop="16dp"
+        android:src="@android:drawable/ic_menu_gallery"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/photo_from_camera" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

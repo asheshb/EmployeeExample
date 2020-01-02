@@ -1,31 +1,52 @@
 package com.example.employeeexample.ui
 
 
+import android.Manifest
+import android.app.Activity.RESULT_OK
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
+import android.widget.Toast
+import androidx.core.app.ActivityCompat
+import androidx.core.content.FileProvider
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import com.example.employeeexample.BuildConfig
 import com.example.employeeexample.R
 import com.example.employeeexample.data.Employee
 import com.example.employeeexample.data.Gender
 import com.example.employeeexample.data.Role
+import com.google.android.material.snackbar.Snackbar
 
 
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
 import kotlinx.android.synthetic.main.fragment_employee_detail.employee_photo
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+import java.text.SimpleDateFormat
+import java.util.*
 
 
-/**
- * A simple [Fragment] subclass.
- */
+const val PERMISSION_REQUEST_CAMERA = 0
+const val CAMERA_PHOTO_REQUEST = 1
+const val GALLERY_PHOTO_REQUEST = 2
+
 class EmployeeDetailFragment : Fragment() {
 
     private lateinit var viewModel: EmployeeDetailViewModel
+    //For simplicity this variable is here but should be moved to ViewModel
+    private var selectedPhotoPath: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
@@ -68,9 +89,33 @@ class EmployeeDetailFragment : Fragment() {
         delete_employee.setOnClickListener {
             deleteEmployee()
         }
+
+        employee_photo.setOnClickListener{
+            employee_photo.setImageResource(R.drawable.blank_photo)
+            employee_photo.tag = ""
+        }
+
+        photo_from_camera.setOnClickListener{
+            clickPhotoAfterPermission(it)
+        }
+
+        photo_from_gallery.setOnClickListener{
+            pickPhoto()
+        }
     }
 
     private fun setData(employee: Employee){
+        with(employee.photo){
+            if(isNotEmpty()){
+                employee_photo.setImageURI(Uri.parse(this))
+                employee_photo.tag = this
+
+            } else{
+                employee_photo.setImageResource(R.drawable.blank_photo)
+                employee_photo.tag = ""
+            }
+        }
+
         employee_name.setText(employee.name)
 
         employee_role.setSelection(employee.role)
@@ -101,7 +146,9 @@ class EmployeeDetailFragment : Fragment() {
         } else if(selectedStatusButton.text == Gender.Female.name) {
             gender = Gender.Female.ordinal
         }
-        val employee = Employee(viewModel.employeeId.value!!, name, role, age, gender, "")
+        val photo = employee_photo.tag as String
+
+        val employee = Employee(viewModel.employeeId.value!!, name, role, age, gender, photo)
         viewModel.saveEmployee(employee)
 
         activity!!.onBackPressed()
@@ -111,5 +158,111 @@ class EmployeeDetailFragment : Fragment() {
         viewModel.deleteEmployee()
 
         activity!!.onBackPressed()
+    }
+
+    private fun clickPhotoAfterPermission(view: View){
+        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA) ==
+            PackageManager.PERMISSION_GRANTED) {
+            clickPhoto()
+        } else {
+            requestCameraPermission(view)
+        }
+    }
+
+    private fun requestCameraPermission(view: View) {
+
+        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
+            val snack = Snackbar.make(view, "We need your permission to take a photo. " +
+                    "When asked please give the permission", Snackbar.LENGTH_INDEFINITE)
+            snack.setAction("OK", View.OnClickListener {
+                requestPermissions(arrayOf(Manifest.permission.CAMERA),
+                    PERMISSION_REQUEST_CAMERA)
+            })
+            snack.show()
+        } else {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA),
+                PERMISSION_REQUEST_CAMERA)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>,
+                                            grantResults: IntArray
+    ) {
+        if (requestCode == PERMISSION_REQUEST_CAMERA) {
+            if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                clickPhoto()
+            } else {
+                Toast.makeText(activity!!, "Permission denied to use camera",
+                    Toast.LENGTH_SHORT). show()
+            }
+        }
+    }
+
+    private fun clickPhoto(){
+        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+            takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
+                val photoFile: File? = try {
+                    createImageFile()
+                } catch (ex: IOException) {
+                    null
+                }
+                photoFile?.also {
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        activity!!,
+                        BuildConfig.APPLICATION_ID + ".fileprovider",
+                        it
+                    )
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    startActivityForResult(takePictureIntent, CAMERA_PHOTO_REQUEST)
+                }
+            }
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if(resultCode == RESULT_OK){
+            when(requestCode){
+                CAMERA_PHOTO_REQUEST -> {
+                    val uri = Uri.fromFile(File(selectedPhotoPath))
+                    employee_photo.setImageURI(uri)
+                    employee_photo.tag = uri.toString()
+                }
+                GALLERY_PHOTO_REQUEST ->{
+                    val photoFile: File? = try {
+                        createImageFile()
+                    } catch (ex: IOException) {
+                        null
+                    }
+                    photoFile?.also {
+                        val resolver = activity!!.applicationContext.contentResolver
+                        resolver.openInputStream(data!!.data!!).use { stream ->
+                            val output = FileOutputStream(photoFile)
+                            stream!!.copyTo(output)
+                        }
+                        val uri = Uri.fromFile(photoFile)
+                        employee_photo.setImageURI(uri)
+                        employee_photo.tag = uri.toString()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createImageFile(): File {
+        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        val photoDir: File? = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
+        return File.createTempFile(
+            timeStamp,
+            ".jpg",
+            photoDir
+        ).apply {
+            selectedPhotoPath = absolutePath
+        }
+    }
+
+    private fun pickPhoto(){
+        val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        startActivityForResult(pickPhotoIntent, GALLERY_PHOTO_REQUEST)
+
     }
 }

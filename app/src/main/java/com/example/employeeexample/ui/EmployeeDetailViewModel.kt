@@ -41,4 +41,5 @@ class EmployeeDetailViewModel(application: Application): AndroidViewModel(applic
             employee.value?.let { repo.deleteEmployee(it) }
         }
     }
+
 }

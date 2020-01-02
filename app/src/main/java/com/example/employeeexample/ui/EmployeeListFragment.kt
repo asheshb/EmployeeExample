@@ -1,28 +1,24 @@
 package com.example.employeeexample.ui
 
-
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.employeeexample.R
 import kotlinx.android.synthetic.main.fragment_employee_list.*
 
-/**
- * A simple [Fragment] subclass.
- */
+
+const val READ_FILE_REQUEST = 1
+
 class EmployeeListFragment : Fragment() {
 
     private lateinit var viewModel: EmployeeListViewModel
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
 
         viewModel = ViewModelProviders.of(this)
             .get(EmployeeListViewModel::class.java)
@@ -61,9 +57,8 @@ class EmployeeListFragment : Fragment() {
         viewModel.employees.observe(viewLifecycleOwner, Observer {
             (employee_list.adapter as EmployeeAdapter).submitList(it)
         })
-
-
     }
+
 
 
 }
