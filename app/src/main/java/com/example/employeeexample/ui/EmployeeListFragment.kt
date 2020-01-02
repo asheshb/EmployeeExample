@@ -177,7 +177,7 @@ class EmployeeListFragment : Fragment() {
         if(intent.resolveActivity(activity!!.packageManager) != null){
             startActivity(intent)
         } else{
-            Toast.makeText(activity!!, "No app to read CSV file", Toast.LENGTH_SHORT).show()
+            Toast.makeText(activity!!, getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
         }
     }
 }
