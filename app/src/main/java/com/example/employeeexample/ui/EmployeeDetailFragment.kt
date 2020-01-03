@@ -3,7 +3,6 @@ package com.example.employeeexample.ui
 
 import android.Manifest
 import android.app.Activity.RESULT_OK
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -150,12 +149,6 @@ class EmployeeDetailFragment : Fragment() {
 
         val employee = Employee(viewModel.employeeId.value!!, name, role, age, gender, photo)
         viewModel.saveEmployee(employee)
-
-        val sharedPref = activity!!.getPreferences(Context.MODE_PRIVATE)
-        with(sharedPref.edit()){
-            putString(LATEST_EMPLOYEE_NAME_KEY, name)
-            commit()
-        }
 
         activity!!.onBackPressed()
     }
