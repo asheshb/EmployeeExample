@@ -29,8 +29,6 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 
-const val READ_FILE_REQUEST = 1
-
 class EmployeeListFragment : Fragment() {
 
     private lateinit var viewModel: EmployeeListViewModel
