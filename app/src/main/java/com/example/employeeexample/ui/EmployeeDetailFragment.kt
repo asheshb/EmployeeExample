@@ -5,12 +5,10 @@ import android.Manifest
 import android.app.Activity.RESULT_OK
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,6 +17,7 @@ import android.widget.RadioButton
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.FileProvider
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import com.example.employeeexample.BuildConfig
@@ -27,10 +26,7 @@ import com.example.employeeexample.data.Employee
 import com.example.employeeexample.data.Gender
 import com.example.employeeexample.data.Role
 import com.google.android.material.snackbar.Snackbar
-
-
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
-import kotlinx.android.synthetic.main.fragment_employee_detail.employee_photo
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
@@ -172,8 +168,7 @@ class EmployeeDetailFragment : Fragment() {
     private fun requestCameraPermission(view: View) {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
-            val snack = Snackbar.make(view, "We need your permission to take a photo. " +
-                    "When asked please give the permission", Snackbar.LENGTH_INDEFINITE)
+            val snack = Snackbar.make(view, getString(R.string.camera_permission), Snackbar.LENGTH_INDEFINITE)
             snack.setAction("OK", View.OnClickListener {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA),
                     PERMISSION_REQUEST_CAMERA)
@@ -192,7 +187,7 @@ class EmployeeDetailFragment : Fragment() {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 clickPhoto()
             } else {
-                Toast.makeText(activity!!, "Permission denied to use camera",
+                Toast.makeText(activity!!, getString(R.string.camera_permission_denied),
                     Toast.LENGTH_SHORT). show()
             }
         }
@@ -204,6 +199,8 @@ class EmployeeDetailFragment : Fragment() {
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
+                    Toast.makeText(activity!!, getString(R.string.camera_file_Error, ex.message),
+                        Toast.LENGTH_SHORT).show()
                     null
                 }
                 photoFile?.also {
