@@ -1,12 +1,10 @@
 package com.example.employeeexample.ui
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -21,10 +19,8 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
 
-
 const val READ_FILE_REQUEST = 1
 const val CREATE_FILE_REQUEST = 2
-const val LATEST_EMPLOYEE_NAME_KEY = "LATEST_EMPLOYEE_NAME_KEY"
 class EmployeeListFragment : Fragment() {
 
     private lateinit var viewModel: EmployeeListViewModel
@@ -87,9 +83,6 @@ class EmployeeListFragment : Fragment() {
             R.id.menu_import_data -> {
                 importEmployees()
                 true
-            }
-            R.id.menu_latest_employee_name -> {
-                return showLatestEmployee()
             }
             else -> super.onOptionsItemSelected(item)
         }
@@ -183,17 +176,4 @@ class EmployeeListFragment : Fragment() {
         }
     }
 
-
-    private fun showLatestEmployee(): Boolean{
-        val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return true
-        val name = sharedPref.getString(LATEST_EMPLOYEE_NAME_KEY, "")
-        if(!name.isNullOrEmpty()){
-            Toast.makeText(activity!!, getString(R.string.latest_employee, name),
-                Toast.LENGTH_SHORT).show()
-        } else{
-            Toast.makeText(activity!!, getString(R.string.no_employee_added),
-                Toast.LENGTH_SHORT).show()
-        }
-        return true
-    }
 }
