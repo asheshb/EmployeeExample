@@ -11,7 +11,6 @@ class EmployeeDetailViewModel(application: Application): AndroidViewModel(applic
         EmployeeDetailRepository(application)
 
     private val _employeeId = MutableLiveData<Long>(0)
-
     val employeeId: LiveData<Long>
         get() = _employeeId
 

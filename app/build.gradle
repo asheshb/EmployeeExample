@@ -10,9 +10,8 @@ apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.1"
     defaultConfig {
-        applicationId "com.example.emploeeexample"
+        applicationId "com.example.employeeexample"
         minSdkVersion 16
         targetSdkVersion 29
         versionCode 1
