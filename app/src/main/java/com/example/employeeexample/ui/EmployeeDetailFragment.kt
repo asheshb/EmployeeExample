@@ -9,7 +9,9 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.RadioButton
 import android.widget.Toast
@@ -26,6 +28,7 @@ import com.example.employeeexample.data.Role
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -44,8 +47,6 @@ class EmployeeDetailFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?){
         super.onCreate(savedInstanceState)
-
-        setHasOptionsMenu(true)
 
         viewModel = ViewModelProviders.of(this)
             .get(EmployeeDetailViewModel::class.java)
@@ -228,20 +229,30 @@ class EmployeeDetailFragment : Fragment() {
                     employee_photo.tag = uri.toString()
                 }
                 GALLERY_PHOTO_REQUEST ->{
-                    val photoFile: File? = try {
-                        createImageFile()
-                    } catch (ex: IOException) {
-                        null
-                    }
-                    photoFile?.also {
-                        val resolver = activity!!.applicationContext.contentResolver
-                        resolver.openInputStream(data!!.data!!).use { stream ->
-                            val output = FileOutputStream(photoFile)
-                            stream!!.copyTo(output)
+                    data?.data?.also { uri ->
+                        val photoFile: File? = try {
+                            createImageFile()
+                        } catch (ex: IOException) {
+                            Toast.makeText(activity!!, "Image file couldn't be created: ${ex.message}",
+                                Toast.LENGTH_SHORT). show()
+                            null
                         }
-                        val uri = Uri.fromFile(photoFile)
-                        employee_photo.setImageURI(uri)
-                        employee_photo.tag = uri.toString()
+                        photoFile?.also {
+                            try {
+                                val resolver = activity!!.applicationContext.contentResolver
+                                resolver.openInputStream(data!!.data!!).use { stream ->
+                                    val output = FileOutputStream(photoFile)
+                                    stream!!.copyTo(output)
+                                }
+                                val uri = Uri.fromFile(photoFile)
+                                employee_photo.setImageURI(uri)
+                                employee_photo.tag = uri.toString()
+                            } catch (e: FileNotFoundException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             }
@@ -266,38 +277,4 @@ class EmployeeDetailFragment : Fragment() {
 
     }
 
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.detail_menu, menu)
-    }
-
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.menu_share_data -> {
-                shareEmployeeData()
-                true
-            }
-            else -> super.onOptionsItemSelected(item)
-        }
-    }
-
-    private fun shareEmployeeData(){
-        val name = employee_name.text.toString()
-        val role = employee_role.selectedItem.toString()
-        val age = employee_age.selectedItemPosition + 18
-
-        val selectedStatusButton =  gender_group.findViewById<RadioButton>(gender_group.checkedRadioButtonId)
-        val gender = selectedStatusButton.text
-
-        val shareText = getString(R.string.share_text, name,role,age,gender)
-
-        val sendIntent: Intent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, shareText)
-            type = "text/plain"
-        }
-
-        val shareIntent = Intent.createChooser(sendIntent, null)
-        startActivity(shareIntent)
-    }
 }
