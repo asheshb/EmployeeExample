@@ -17,4 +17,9 @@
 
     <string name="years">%1$d years</string>
     <string name="no_app_csv">No app to read CSV file</string>
+
+    <string name="camera_permission">"We need your permission to take a photo.
+        When asked please give the permission"</string>
+    <string name="camera_permission_denied">Permission denied to use camera</string>
+    <string name="image_file_Error">Error occurred while creating camera file: %1$s</string>
 </resources>

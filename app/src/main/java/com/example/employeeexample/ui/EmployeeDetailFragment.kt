@@ -28,6 +28,7 @@ import com.example.employeeexample.data.Role
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 import java.text.SimpleDateFormat
@@ -171,8 +172,7 @@ class EmployeeDetailFragment : Fragment() {
     private fun requestCameraPermission(view: View) {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
-            val snack = Snackbar.make(view, "We need your permission to take a photo. " +
-                    "When asked please give the permission", Snackbar.LENGTH_INDEFINITE)
+            val snack = Snackbar.make(view, R.string.camera_permission, Snackbar.LENGTH_INDEFINITE)
             snack.setAction("OK", View.OnClickListener {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA),
                     PERMISSION_REQUEST_CAMERA)
@@ -203,6 +203,8 @@ class EmployeeDetailFragment : Fragment() {
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
+                    Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                        Toast.LENGTH_SHORT). show()
                     null
                 }
                 photoFile?.also {
@@ -228,25 +230,36 @@ class EmployeeDetailFragment : Fragment() {
                     employee_photo.tag = uri.toString()
                 }
                 GALLERY_PHOTO_REQUEST ->{
-                    val photoFile: File? = try {
-                        createImageFile()
-                    } catch (ex: IOException) {
-                        null
-                    }
-                    photoFile?.also {
-                        val resolver = activity!!.applicationContext.contentResolver
-                        resolver.openInputStream(data!!.data!!).use { stream ->
-                            val output = FileOutputStream(photoFile)
-                            stream!!.copyTo(output)
+                    data?.data?.also { uri ->
+                        val photoFile: File? = try {
+                            createImageFile()
+                        } catch (ex: IOException) {
+                            Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                                Toast.LENGTH_SHORT). show()
+                            null
                         }
-                        val uri = Uri.fromFile(photoFile)
-                        employee_photo.setImageURI(uri)
-                        employee_photo.tag = uri.toString()
+                        photoFile?.also {
+                            try {
+                                val resolver = activity!!.applicationContext.contentResolver
+                                resolver.openInputStream(data!!.data!!).use { stream ->
+                                    val output = FileOutputStream(photoFile)
+                                    stream!!.copyTo(output)
+                                }
+                                val uri = Uri.fromFile(photoFile)
+                                employee_photo.setImageURI(uri)
+                                employee_photo.tag = uri.toString()
+                            } catch (e: FileNotFoundException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             }
         }
     }
+
 
     private fun createImageFile(): File {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())

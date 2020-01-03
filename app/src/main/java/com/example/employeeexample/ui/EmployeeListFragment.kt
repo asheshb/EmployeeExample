@@ -21,10 +21,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
+import java.io.*
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -92,13 +89,7 @@ class EmployeeListFragment : Fragment() {
                 true
             }
             R.id.menu_import_data -> {
-                Intent(Intent.ACTION_GET_CONTENT).also { readFileIntent ->
-                    readFileIntent.addCategory(Intent.CATEGORY_OPENABLE)
-                    readFileIntent.type = "text/*"
-                    readFileIntent.resolveActivity(activity!!.packageManager)?.also {
-                        startActivityForResult(readFileIntent, READ_FILE_REQUEST)
-                    }
-                }
+                importEmployees()
                 true
             }
             else -> super.onOptionsItemSelected(item)
@@ -110,17 +101,40 @@ class EmployeeListFragment : Fragment() {
             when (requestCode) {
                 READ_FILE_REQUEST -> {
                     GlobalScope.launch{
-                        val resolver = activity!!.applicationContext.contentResolver
-                        resolver.openInputStream(data!!.data!!).use { stream ->
-                            stream?.let{
-                                withContext(Dispatchers.IO) {
-                                    parseCSVFile(stream)
-                                }
+                        data?.data?.also { uri ->
+                            GlobalScope.launch {
+                                readFromFile(uri)
                             }
                         }
                     }
                 }
             }
+        }
+    }
+
+    private fun importEmployees(){
+        Intent(Intent.ACTION_GET_CONTENT).also { readFileIntent ->
+            readFileIntent.addCategory(Intent.CATEGORY_OPENABLE)
+            readFileIntent.type = "text/*"
+            readFileIntent.resolveActivity(activity!!.packageManager)?.also {
+                startActivityForResult(readFileIntent, READ_FILE_REQUEST)
+            }
+        }
+    }
+
+    private suspend fun readFromFile(uri: Uri){
+        try {
+            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "r")?.use {
+                FileInputStream(it.fileDescriptor).use {
+                    withContext(Dispatchers.IO) {
+                        parseCSVFile(it)
+                    }
+                }
+            }
+        } catch (e: FileNotFoundException) {
+            e.printStackTrace()
+        } catch (e: IOException) {
+            e.printStackTrace()
         }
     }
 
