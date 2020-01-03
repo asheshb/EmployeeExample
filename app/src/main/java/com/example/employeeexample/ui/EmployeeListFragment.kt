@@ -83,14 +83,14 @@ class EmployeeListFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
+            R.id.menu_import_data -> {
+                importEmployees()
+                true
+            }
             R.id.menu_export_data -> {
                 GlobalScope.launch {
                     exportEmployees()
                 }
-                true
-            }
-            R.id.menu_import_data -> {
-                importEmployees()
                 true
             }
             else -> super.onOptionsItemSelected(item)
