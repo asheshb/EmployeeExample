@@ -24,5 +24,9 @@
     <string name="share_employee_data">Share Employee data</string>
     <string name="share_text">Employee Data\nName: %1$s\nRole: %2$s\nAge: %3$d\nGender: %4$s</string>
 
+    <string name="camera_permission">"We need your permission to take a photo.
+        When asked please give the permission"</string>
+    <string name="camera_permission_denied">Permission denied to use camera</string>
+    <string name="image_file_Error">Error occurred while creating camera file: %1$s</string>
 
 </resources>

@@ -172,8 +172,7 @@ class EmployeeDetailFragment : Fragment() {
     private fun requestCameraPermission(view: View) {
 
         if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
-            val snack = Snackbar.make(view, "We need your permission to take a photo. " +
-                    "When asked please give the permission", Snackbar.LENGTH_INDEFINITE)
+            val snack = Snackbar.make(view, R.string.camera_permission, Snackbar.LENGTH_INDEFINITE)
             snack.setAction("OK", View.OnClickListener {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA),
                     PERMISSION_REQUEST_CAMERA)
@@ -192,7 +191,7 @@ class EmployeeDetailFragment : Fragment() {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 clickPhoto()
             } else {
-                Toast.makeText(activity!!, "Permission denied to use camera",
+                Toast.makeText(activity!!, getString(R.string.camera_permission_denied),
                     Toast.LENGTH_SHORT). show()
             }
         }
@@ -204,6 +203,8 @@ class EmployeeDetailFragment : Fragment() {
                 val photoFile: File? = try {
                     createImageFile()
                 } catch (ex: IOException) {
+                    Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                        Toast.LENGTH_SHORT). show()
                     null
                 }
                 photoFile?.also {
@@ -233,7 +234,7 @@ class EmployeeDetailFragment : Fragment() {
                         val photoFile: File? = try {
                             createImageFile()
                         } catch (ex: IOException) {
-                            Toast.makeText(activity!!, "Image file couldn't be created: ${ex.message}",
+                            Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
                                 Toast.LENGTH_SHORT). show()
                             null
                         }
