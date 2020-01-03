@@ -156,7 +156,7 @@ class EmployeeListFragment : Fragment() {
     private suspend fun exportEmployees(){
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
-            val csvFile: File? = try {
+            csvFile = try {
                 createFile()
             } catch (ex: IOException) {
                 Toast.makeText(activity!!, getString(R.string.file_create_error, ex.message),
