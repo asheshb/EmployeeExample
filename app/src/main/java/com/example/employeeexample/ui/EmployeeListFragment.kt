@@ -22,12 +22,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.BufferedReader
-import java.io.File
-import java.io.InputStream
-import java.io.InputStreamReader
-import java.text.SimpleDateFormat
-import java.util.*
+import java.io.*
 
 
 const val READ_FILE_REQUEST = 1
@@ -155,14 +150,13 @@ class EmployeeListFragment : Fragment() {
     private suspend fun exportEmployees(){
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
-            val timeStamp: String =
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val filesDir: File? = activity!!.getExternalFilesDir("Documents")
-            csvFile = File.createTempFile(
-                timeStamp,
-                ".csv",
-                filesDir
-            )
+
+            val csvFile: File? = try {
+                createFile(activity!!, "Documents", "csv")
+            } catch (ex: IOException) {
+                null
+            }
+
             csvFile?.printWriter()?.use { out ->
                 val employees = viewModel.getEmployeeList()
                 if(employees.isNotEmpty()){
