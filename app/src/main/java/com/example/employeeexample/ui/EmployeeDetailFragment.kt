@@ -86,6 +86,7 @@ class EmployeeDetailFragment : Fragment() {
             deleteEmployee()
         }
 
+        //reset image
         employee_photo.setOnClickListener{
             employee_photo.setImageResource(R.drawable.blank_photo)
             employee_photo.tag = ""
@@ -247,6 +248,7 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun createImageFile(): File {
         val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+        //getFilesDir()
         val photoDir: File? = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
         return File.createTempFile(
             timeStamp,
