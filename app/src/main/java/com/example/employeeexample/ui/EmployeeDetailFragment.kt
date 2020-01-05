@@ -298,7 +298,7 @@ class EmployeeDetailFragment : Fragment() {
             type = "text/plain"
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, null)
+        val shareIntent = Intent.createChooser(sendIntent, getString(R.string.share_data_title))
         startActivity(shareIntent)
     }
 }
