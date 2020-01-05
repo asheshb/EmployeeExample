@@ -151,9 +151,11 @@ class EmployeeListFragment : Fragment() {
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
 
-            val csvFile: File? = try {
+            csvFile = try {
                 createFile(activity!!, "Documents", "csv")
             } catch (ex: IOException) {
+                Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                    Toast.LENGTH_SHORT).show()
                 null
             }
 

@@ -210,9 +210,12 @@ class EmployeeDetailFragment : Fragment() {
                 val photoFile: File? = try {
                     createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
                 } catch (ex: IOException) {
+                    Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                        Toast.LENGTH_SHORT).show()
                     null
                 }
                 photoFile?.also {
+                    selectedPhotoPath = it.absolutePath
                     val photoURI: Uri = FileProvider.getUriForFile(
                         activity!!,
                         BuildConfig.APPLICATION_ID + ".fileprovider",
@@ -238,9 +241,13 @@ class EmployeeDetailFragment : Fragment() {
                     val photoFile: File? = try {
                         createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
                     } catch (ex: IOException) {
+                        Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                            Toast.LENGTH_SHORT).show()
+
                         null
                     }
                     photoFile?.also {
+                        selectedPhotoPath = it.absolutePath
                         val resolver = activity!!.applicationContext.contentResolver
                         resolver.openInputStream(data!!.data!!).use { stream ->
                             val output = FileOutputStream(photoFile)
