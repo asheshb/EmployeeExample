@@ -18,5 +18,5 @@
     <string name="years">%1$d years</string>
     <string name="camera_permission">"We need your permission to take a photo. When asked please give the permission"</string>
     <string name="camera_permission_denied">Permission denied to use camera</string>
-    <string name="camera_file_Error">Error occurred while creating camera file: %1$s</string>
+    <string name="create_file_Error">Error occurred while creating file: %1$s</string>
 </resources>

@@ -199,7 +199,7 @@ class EmployeeDetailFragment : Fragment() {
                 val photoFile: File? = try {
                     createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
                 } catch (ex: IOException) {
-                    Toast.makeText(activity!!, getString(R.string.camera_file_Error, ex.message),
+                    Toast.makeText(activity!!, getString(R.string.create_file_Error, ex.message),
                         Toast.LENGTH_SHORT).show()
                     null
                 }
@@ -230,7 +230,7 @@ class EmployeeDetailFragment : Fragment() {
                         val photoFile: File? = try {
                             createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
                         } catch (ex: IOException) {
-                            Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                            Toast.makeText(activity!!, getString(R.string.create_file_Error, ex.message),
                                 Toast.LENGTH_SHORT). show()
                             null
                         }
