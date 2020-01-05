@@ -154,7 +154,6 @@ class EmployeeListFragment : Fragment() {
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
             csvFile = createFile(activity!!, "Documents", "csv")
-
             csvFile?.printWriter()?.use { out ->
                 val employees = viewModel.getEmployeeList()
                 if(employees.isNotEmpty()){
