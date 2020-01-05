@@ -154,7 +154,9 @@ class EmployeeListFragment : Fragment() {
             type = "text/csv"
 
         }
-        startActivityForResult(intent, READ_FILE_REQUEST)
+        intent.resolveActivity(activity!!.packageManager)?.also {
+            startActivityForResult(intent, READ_FILE_REQUEST)
+        }
     }
 
     private suspend fun readFromFile(uri: Uri){
