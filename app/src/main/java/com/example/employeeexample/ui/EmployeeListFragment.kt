@@ -120,12 +120,12 @@ class EmployeeListFragment : Fragment() {
 
     private suspend fun writeToFile(uri: Uri){
         try {
-            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "w")?.use {
-                FileOutputStream(it.fileDescriptor).use {out ->
+            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "w")?.use {pfd ->
+                FileOutputStream(pfd.fileDescriptor).use {outStream ->
                     val employees = viewModel.getEmployeeList()
                     if(employees.isNotEmpty()){
                         employees.forEach{
-                            out.write((it.name + "," + it.role + "," + it.age + "," + it.gender).toByteArray())
+                            outStream.write((it.name + "," + it.role + "," + it.age + "," + it.gender + "\n").toByteArray())
                         }
                     }
                 }
