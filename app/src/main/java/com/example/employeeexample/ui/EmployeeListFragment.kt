@@ -101,9 +101,7 @@ class EmployeeListFragment : Fragment() {
                 READ_FILE_REQUEST -> {
                     GlobalScope.launch{
                         data?.data?.also { uri ->
-                            GlobalScope.launch {
-                                readFromFile(uri)
-                            }
+                            readFromFile(uri)
                         }
                     }
                 }
@@ -124,8 +122,8 @@ class EmployeeListFragment : Fragment() {
     private suspend fun readFromFile(uri: Uri){
         try {
             activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "r")?.use {
-                FileInputStream(it.fileDescriptor).use {
-                    withContext(Dispatchers.IO) {
+                withContext(Dispatchers.IO) {
+                    FileInputStream(it.fileDescriptor).use {
                         parseCSVFile(it)
                     }
                 }
