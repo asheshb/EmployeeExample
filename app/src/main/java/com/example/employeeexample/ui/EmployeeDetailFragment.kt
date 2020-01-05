@@ -206,6 +206,7 @@ class EmployeeDetailFragment : Fragment() {
                     null
                 }
                 photoFile?.also {
+                    selectedPhotoPath = it.absolutePath
                     val photoURI: Uri = FileProvider.getUriForFile(
                         activity!!,
                         BuildConfig.APPLICATION_ID + ".fileprovider",
@@ -238,6 +239,7 @@ class EmployeeDetailFragment : Fragment() {
                         }
                         photoFile?.also {
                             try {
+                                selectedPhotoPath = it.absolutePath
                                 val resolver = activity!!.applicationContext.contentResolver
                                 resolver.openInputStream(data!!.data!!).use { stream ->
                                     val output = FileOutputStream(photoFile)
