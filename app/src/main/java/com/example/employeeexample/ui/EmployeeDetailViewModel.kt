@@ -26,6 +26,9 @@ class EmployeeDetailViewModel(application: Application): AndroidViewModel(applic
     }
 
     fun saveEmployee(employee: Employee){
+        //viewModelScope use Dispatchers.Main (which means it run on Main thread) but we don't
+        // get error from Room. This is because functions in Room marked as "suspend" are main-safe,
+        // which means that they can be called from Main thread
         viewModelScope.launch {
             if (_employeeId.value == 0L) {
                 _employeeId.value = repo.insertEmployee(employee)
