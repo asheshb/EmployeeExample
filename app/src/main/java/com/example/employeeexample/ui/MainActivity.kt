@@ -12,6 +12,7 @@ import java.util.*
 fun createFile(context: Context, folder: String, ext: String): File {
     val timeStamp: String =
         SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
+    //getFilesDir() is for internal storage
     val filesDir: File? = context.getExternalFilesDir(folder)
     val newFile = File(filesDir, "$timeStamp.$ext")
     newFile.createNewFile()
