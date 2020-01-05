@@ -26,8 +26,6 @@ import java.io.BufferedReader
 import java.io.File
 import java.io.InputStream
 import java.io.InputStreamReader
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 const val READ_FILE_REQUEST = 1
@@ -155,14 +153,8 @@ class EmployeeListFragment : Fragment() {
     private suspend fun exportEmployees(){
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
-            val timeStamp: String =
-                SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-            val filesDir: File? = activity!!.getExternalFilesDir("Documents")
-            csvFile = File.createTempFile(
-                timeStamp,
-                ".csv",
-                filesDir
-            )
+            csvFile = createFile(activity!!, "Documents", "csv")
+
             csvFile?.printWriter()?.use { out ->
                 val employees = viewModel.getEmployeeList()
                 if(employees.isNotEmpty()){
