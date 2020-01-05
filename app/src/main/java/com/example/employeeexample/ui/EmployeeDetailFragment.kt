@@ -240,13 +240,13 @@ class EmployeeDetailFragment : Fragment() {
                         photoFile?.also {
                             try {
                                 val resolver = activity!!.applicationContext.contentResolver
-                                resolver.openInputStream(data!!.data!!).use { stream ->
+                                resolver.openInputStream(uri).use { stream ->
                                     val output = FileOutputStream(photoFile)
                                     stream!!.copyTo(output)
                                 }
-                                val uri = Uri.fromFile(photoFile)
-                                employee_photo.setImageURI(uri)
-                                employee_photo.tag = uri.toString()
+                                val fileUri = Uri.fromFile(photoFile)
+                                employee_photo.setImageURI(fileUri)
+                                employee_photo.tag = fileUri.toString()
                             } catch (e: FileNotFoundException) {
                                 e.printStackTrace()
                             } catch (e: IOException) {
