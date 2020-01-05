@@ -5,6 +5,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.*
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -101,7 +102,14 @@ class EmployeeListFragment : Fragment() {
                 CREATE_FILE_REQUEST -> {
                     data?.data?.also { uri ->
                         GlobalScope.launch {
-                            writeToFile(uri)
+                            if(writeToFile(uri)){
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                        activity!!, getString(R.string.file_export_success),
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }
                         }
                     }
                 }
@@ -118,7 +126,7 @@ class EmployeeListFragment : Fragment() {
         startActivityForResult(intent, CREATE_FILE_REQUEST)
     }
 
-    private suspend fun writeToFile(uri: Uri){
+    private suspend fun writeToFile(uri: Uri): Boolean{
         try {
             activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "w")?.use {pfd ->
                 FileOutputStream(pfd.fileDescriptor).use {outStream ->
@@ -132,9 +140,12 @@ class EmployeeListFragment : Fragment() {
             }
         } catch (e: FileNotFoundException) {
             e.printStackTrace()
+            return false
         } catch (e: IOException) {
             e.printStackTrace()
+            return false
         }
+        return true
     }
 
     private fun importEmployees(){
