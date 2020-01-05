@@ -22,8 +22,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 const val READ_FILE_REQUEST = 1
@@ -157,7 +155,7 @@ class EmployeeListFragment : Fragment() {
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
             csvFile = try {
-                createFile()
+                createFile(activity!!,"Documents", "csv")
             } catch (ex: IOException) {
                 Toast.makeText(activity!!, getString(R.string.file_create_error, ex.message),
                     Toast.LENGTH_SHORT). show()
@@ -194,14 +192,4 @@ class EmployeeListFragment : Fragment() {
             Toast.makeText(activity!!, getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
         }
     }
-
-    private fun createFile(): File {
-        val timeStamp: String =
-            SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val filesDir: File? = activity!!.getExternalFilesDir("Documents")
-        val csvFile = File(filesDir, "$timeStamp.csv")
-        csvFile.createNewFile()
-        return csvFile
-    }
-
 }

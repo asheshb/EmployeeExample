@@ -31,8 +31,6 @@ import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
 
 
 const val PERMISSION_REQUEST_CAMERA = 0
@@ -201,7 +199,9 @@ class EmployeeDetailFragment : Fragment() {
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
                 val photoFile: File? = try {
-                    createImageFile()
+                    createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg").apply {
+                        selectedPhotoPath = absolutePath
+                    }
                 } catch (ex: IOException) {
                     Toast.makeText(activity!!, getString(R.string.file_create_error, ex.message),
                         Toast.LENGTH_SHORT). show()
@@ -232,7 +232,9 @@ class EmployeeDetailFragment : Fragment() {
                 GALLERY_PHOTO_REQUEST ->{
                     data?.data?.also { uri ->
                         val photoFile: File? = try {
-                            createImageFile()
+                            createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg").apply {
+                                selectedPhotoPath = absolutePath
+                            }
                         } catch (ex: IOException) {
                             Toast.makeText(activity!!, getString(R.string.file_create_error, ex.message),
                                 Toast.LENGTH_SHORT). show()
@@ -260,18 +262,6 @@ class EmployeeDetailFragment : Fragment() {
         }
     }
 
-
-    private fun createImageFile(): File {
-        val timeStamp: String = SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(Date())
-        val photoDir: File? = activity!!.getExternalFilesDir(Environment.DIRECTORY_PICTURES)
-        return File.createTempFile(
-            timeStamp,
-            ".jpg",
-            photoDir
-        ).apply {
-            selectedPhotoPath = absolutePath
-        }
-    }
 
     private fun pickPhoto(){
         val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
