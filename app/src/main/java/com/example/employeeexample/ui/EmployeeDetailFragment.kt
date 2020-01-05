@@ -239,7 +239,6 @@ class EmployeeDetailFragment : Fragment() {
                         }
                         photoFile?.also {
                             try {
-                                selectedPhotoPath = it.absolutePath
                                 val resolver = activity!!.applicationContext.contentResolver
                                 resolver.openInputStream(data!!.data!!).use { stream ->
                                     val output = FileOutputStream(photoFile)
