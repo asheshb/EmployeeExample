@@ -28,6 +28,7 @@ import com.example.employeeexample.data.Role
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_employee_detail.*
 import java.io.File
+import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 
@@ -225,22 +226,30 @@ class EmployeeDetailFragment : Fragment() {
                     employee_photo.tag = uri.toString()
                 }
                 GALLERY_PHOTO_REQUEST ->{
-                    val photoFile: File? = try {
-                        createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
-                    } catch (ex: IOException) {
-                        Toast.makeText(activity!!, getString(R.string.camera_file_Error, ex.message),
-                            Toast.LENGTH_SHORT).show()
-                        null
-                    }
-                    photoFile?.also {
-                        val resolver = activity!!.applicationContext.contentResolver
-                        resolver.openInputStream(data!!.data!!).use { stream ->
-                            val output = FileOutputStream(photoFile)
-                            stream!!.copyTo(output)
+                    data?.data?.also { uri ->
+                        val photoFile: File? = try {
+                            createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
+                        } catch (ex: IOException) {
+                            Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                                Toast.LENGTH_SHORT). show()
+                            null
                         }
-                        val uri = Uri.fromFile(photoFile)
-                        employee_photo.setImageURI(uri)
-                        employee_photo.tag = uri.toString()
+                        photoFile?.also {
+                            try {
+                                val resolver = activity!!.applicationContext.contentResolver
+                                resolver.openInputStream(uri).use { stream ->
+                                    val output = FileOutputStream(photoFile)
+                                    stream!!.copyTo(output)
+                                }
+                                val fileUri = Uri.fromFile(photoFile)
+                                employee_photo.setImageURI(fileUri)
+                                employee_photo.tag = fileUri.toString()
+                            } catch (e: FileNotFoundException) {
+                                e.printStackTrace()
+                            } catch (e: IOException) {
+                                e.printStackTrace()
+                            }
+                        }
                     }
                 }
             }
