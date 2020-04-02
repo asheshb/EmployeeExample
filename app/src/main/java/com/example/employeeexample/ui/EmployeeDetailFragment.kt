@@ -63,12 +63,12 @@ class EmployeeDetailFragment : Fragment() {
 
         val roles = mutableListOf<String>()
         Role.values().forEach { roles.add(it.name)}
-        val arrayAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, roles)
+        val arrayAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, roles)
         employee_role.adapter = arrayAdapter
 
         val ages = mutableListOf<Int>()
         for(i in 18 until 81){ ages.add(i) }
-        employee_age.adapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, ages)
+        employee_age.adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, ages)
 
         employee_photo.setImageResource(R.drawable.blank_photo)
         employee_photo.tag = ""
@@ -150,24 +150,24 @@ class EmployeeDetailFragment : Fragment() {
         viewModel.saveEmployee(employee)
 
         if(viewModel.employeeId.value == 0L) {
-            val sharedPref = activity!!.getPreferences(Context.MODE_PRIVATE)
+            val sharedPref = requireActivity().getPreferences(Context.MODE_PRIVATE)
             with(sharedPref.edit()) {
                 putString(LATEST_EMPLOYEE_NAME_KEY, name)
                 commit()
             }
         }
 
-        activity!!.onBackPressed()
+        requireActivity().onBackPressed()
     }
 
     private fun deleteEmployee(){
         viewModel.deleteEmployee()
 
-        activity!!.onBackPressed()
+        requireActivity().onBackPressed()
     }
 
     private fun clickPhotoAfterPermission(view: View){
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA) ==
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED) {
             clickPhoto()
         } else {
@@ -177,7 +177,7 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun requestCameraPermission(view: View) {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
             val snack = Snackbar.make(view, "We need your permission to take a photo. " +
                     "When asked please give the permission", Snackbar.LENGTH_INDEFINITE)
             snack.setAction("OK", View.OnClickListener {
@@ -198,7 +198,7 @@ class EmployeeDetailFragment : Fragment() {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 clickPhoto()
             } else {
-                Toast.makeText(activity!!, "Permission denied to use camera",
+                Toast.makeText(requireActivity(), "Permission denied to use camera",
                     Toast.LENGTH_SHORT). show()
             }
         }
@@ -206,18 +206,18 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun clickPhoto(){
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
+            takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
                 val photoFile: File? = try {
-                    createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
+                    createFile(requireActivity(), Environment.DIRECTORY_PICTURES, "jpg")
                 } catch (ex: IOException) {
-                    Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                    Toast.makeText(requireActivity(), getString(R.string.create_file_error, ex.message),
                         Toast.LENGTH_SHORT).show()
                     null
                 }
                 photoFile?.also {
                     selectedPhotoPath = it.absolutePath
                     val photoURI: Uri = FileProvider.getUriForFile(
-                        activity!!,
+                        requireActivity(),
                         BuildConfig.APPLICATION_ID + ".fileprovider",
                         it
                     )
@@ -239,16 +239,16 @@ class EmployeeDetailFragment : Fragment() {
                 }
                 GALLERY_PHOTO_REQUEST ->{
                     val photoFile: File? = try {
-                        createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
+                        createFile(requireActivity(), Environment.DIRECTORY_PICTURES, "jpg")
                     } catch (ex: IOException) {
-                        Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                        Toast.makeText(requireActivity(), getString(R.string.create_file_error, ex.message),
                             Toast.LENGTH_SHORT).show()
 
                         null
                     }
                     photoFile?.also {
                         selectedPhotoPath = it.absolutePath
-                        val resolver = activity!!.applicationContext.contentResolver
+                        val resolver = requireActivity().contentResolver
                         resolver.openInputStream(data!!.data!!).use { stream ->
                             val output = FileOutputStream(photoFile)
                             stream!!.copyTo(output)

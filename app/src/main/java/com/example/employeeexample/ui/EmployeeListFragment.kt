@@ -92,7 +92,7 @@ class EmployeeListFragment : Fragment() {
                 Intent(Intent.ACTION_GET_CONTENT).also { readFileIntent ->
                     readFileIntent.addCategory(Intent.CATEGORY_OPENABLE)
                     readFileIntent.type = "text/*"
-                    readFileIntent.resolveActivity(activity!!.packageManager)?.also {
+                    readFileIntent.resolveActivity(requireActivity().packageManager)?.also {
                         startActivityForResult(readFileIntent, READ_FILE_REQUEST)
                     }
                 }
@@ -102,10 +102,10 @@ class EmployeeListFragment : Fragment() {
                 val sharedPref = activity?.getPreferences(Context.MODE_PRIVATE) ?: return true
                 val name = sharedPref.getString(LATEST_EMPLOYEE_NAME_KEY, "")
                 if(!name.isNullOrEmpty()){
-                    Toast.makeText(activity!!, getString(R.string.latest_employee, name),
+                    Toast.makeText(requireActivity(), getString(R.string.latest_employee, name),
                         Toast.LENGTH_SHORT).show()
                 } else{
-                    Toast.makeText(activity!!, getString(R.string.no_employee_added),
+                    Toast.makeText(requireActivity(), getString(R.string.no_employee_added),
                         Toast.LENGTH_SHORT).show()
                 }
                 true
@@ -119,7 +119,7 @@ class EmployeeListFragment : Fragment() {
             when (requestCode) {
                 READ_FILE_REQUEST -> {
                     GlobalScope.launch{
-                        val resolver = activity!!.applicationContext.contentResolver
+                        val resolver = requireActivity().contentResolver
                         resolver.openInputStream(data!!.data!!).use { stream ->
                             stream?.let{
                                 withContext(Dispatchers.IO) {
@@ -152,9 +152,9 @@ class EmployeeListFragment : Fragment() {
         withContext(Dispatchers.IO) {
 
             csvFile = try {
-                createFile(activity!!, "Documents", "csv")
+                createFile(requireActivity(), "Documents", "csv")
             } catch (ex: IOException) {
-                Toast.makeText(activity!!, getString(R.string.create_file_error, ex.message),
+                Toast.makeText(requireActivity(), getString(R.string.create_file_error, ex.message),
                     Toast.LENGTH_SHORT).show()
                 null
             }
@@ -171,7 +171,7 @@ class EmployeeListFragment : Fragment() {
         withContext(Dispatchers.Main){
             csvFile?.let{
                 val uri = FileProvider.getUriForFile(
-                    activity!!, BuildConfig.APPLICATION_ID + ".fileprovider",
+                    requireActivity(), BuildConfig.APPLICATION_ID + ".fileprovider",
                     it)
                 launchFile(uri, "csv")
             }
@@ -183,10 +183,10 @@ class EmployeeListFragment : Fragment() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.setDataAndType(uri, mimeType)
-        if(intent.resolveActivity(activity!!.packageManager) != null){
+        if(intent.resolveActivity(requireActivity().packageManager) != null){
             startActivity(intent)
         } else{
-            Toast.makeText(activity!!, getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
         }
     }
 }
