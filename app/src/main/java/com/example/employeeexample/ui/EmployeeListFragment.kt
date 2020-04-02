@@ -105,7 +105,7 @@ class EmployeeListFragment : Fragment() {
                             if(writeToFile(uri)){
                                 withContext(Dispatchers.Main) {
                                     Toast.makeText(
-                                        activity!!, getString(R.string.file_export_success),
+                                        requireActivity(), getString(R.string.file_export_success),
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }
@@ -128,7 +128,7 @@ class EmployeeListFragment : Fragment() {
 
     private suspend fun writeToFile(uri: Uri): Boolean{
         try {
-            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "w")?.use {pfd ->
+            requireActivity().contentResolver.openFileDescriptor(uri, "w")?.use {pfd ->
                 FileOutputStream(pfd.fileDescriptor).use {outStream ->
                     val employees = viewModel.getEmployeeList()
                     if(employees.isNotEmpty()){
@@ -154,7 +154,7 @@ class EmployeeListFragment : Fragment() {
             type = "text/csv"
 
         }
-        intent.resolveActivity(activity!!.packageManager)?.also {
+        intent.resolveActivity(requireActivity().packageManager)?.also {
             startActivityForResult(intent, READ_FILE_REQUEST)
         }
     }
@@ -162,7 +162,7 @@ class EmployeeListFragment : Fragment() {
     private suspend fun readFromFile(uri: Uri){
 
         try {
-            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "r")?.use {
+            requireActivity().contentResolver.openFileDescriptor(uri, "r")?.use {
                 FileInputStream(it.fileDescriptor).use {
                     withContext(Dispatchers.IO) {
                         parseCSVFile(it)

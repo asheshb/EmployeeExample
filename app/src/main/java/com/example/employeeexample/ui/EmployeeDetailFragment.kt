@@ -63,12 +63,12 @@ class EmployeeDetailFragment : Fragment() {
 
         val roles = mutableListOf<String>()
         Role.values().forEach { roles.add(it.name)}
-        val arrayAdapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, roles)
+        val arrayAdapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, roles)
         employee_role.adapter = arrayAdapter
 
         val ages = mutableListOf<Int>()
         for(i in 18 until 81){ ages.add(i) }
-        employee_age.adapter = ArrayAdapter(activity!!, android.R.layout.simple_spinner_item, ages)
+        employee_age.adapter = ArrayAdapter(requireActivity(), android.R.layout.simple_spinner_item, ages)
 
         employee_photo.setImageResource(R.drawable.blank_photo)
         employee_photo.tag = ""
@@ -149,17 +149,17 @@ class EmployeeDetailFragment : Fragment() {
         val employee = Employee(viewModel.employeeId.value!!, name, role, age, gender, photo)
         viewModel.saveEmployee(employee)
 
-        activity!!.onBackPressed()
+        requireActivity().onBackPressed()
     }
 
     private fun deleteEmployee(){
         viewModel.deleteEmployee()
 
-        activity!!.onBackPressed()
+        requireActivity().onBackPressed()
     }
 
     private fun clickPhotoAfterPermission(view: View){
-        if (ActivityCompat.checkSelfPermission(activity!!, Manifest.permission.CAMERA) ==
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.CAMERA) ==
             PackageManager.PERMISSION_GRANTED) {
             clickPhoto()
         } else {
@@ -169,7 +169,7 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun requestCameraPermission(view: View) {
 
-        if (ActivityCompat.shouldShowRequestPermissionRationale(activity!!, Manifest.permission.CAMERA)) {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(requireActivity(), Manifest.permission.CAMERA)) {
             val snack = Snackbar.make(view, R.string.camera_permission, Snackbar.LENGTH_INDEFINITE)
             snack.setAction("OK", View.OnClickListener {
                 requestPermissions(arrayOf(Manifest.permission.CAMERA),
@@ -189,7 +189,7 @@ class EmployeeDetailFragment : Fragment() {
             if (grantResults.size == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 clickPhoto()
             } else {
-                Toast.makeText(activity!!, getString(R.string.camera_permission_denied),
+                Toast.makeText(requireActivity(), getString(R.string.camera_permission_denied),
                     Toast.LENGTH_SHORT). show()
             }
         }
@@ -197,18 +197,18 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun clickPhoto(){
         Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            takePictureIntent.resolveActivity(activity!!.packageManager)?.also {
+            takePictureIntent.resolveActivity(requireActivity().packageManager)?.also {
                 val photoFile: File? = try {
-                    createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
+                    createFile(requireActivity(), Environment.DIRECTORY_PICTURES, "jpg")
                 } catch (ex: IOException) {
-                    Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                    Toast.makeText(requireActivity(), getString(R.string.image_file_Error, ex.message),
                         Toast.LENGTH_SHORT). show()
                     null
                 }
                 photoFile?.also {
                     selectedPhotoPath = it.absolutePath
                     val photoURI: Uri = FileProvider.getUriForFile(
-                        activity!!,
+                        requireActivity(),
                         BuildConfig.APPLICATION_ID + ".fileprovider",
                         it
                     )
@@ -231,15 +231,15 @@ class EmployeeDetailFragment : Fragment() {
                 GALLERY_PHOTO_REQUEST ->{
                     data?.data?.also { uri ->
                         val photoFile: File? = try {
-                            createFile(activity!!, Environment.DIRECTORY_PICTURES, "jpg")
+                            createFile(requireActivity(), Environment.DIRECTORY_PICTURES, "jpg")
                         } catch (ex: IOException) {
-                            Toast.makeText(activity!!, getString(R.string.image_file_Error, ex.message),
+                            Toast.makeText(requireActivity(), getString(R.string.image_file_Error, ex.message),
                                 Toast.LENGTH_SHORT). show()
                             null
                         }
                         photoFile?.also {
                             try {
-                                val resolver = activity!!.applicationContext.contentResolver
+                                val resolver = requireActivity().contentResolver
                                 resolver.openInputStream(uri).use { stream ->
                                     val output = FileOutputStream(photoFile)
                                     stream!!.copyTo(output)
@@ -261,7 +261,7 @@ class EmployeeDetailFragment : Fragment() {
 
     private fun pickPhoto(){
         val pickPhotoIntent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        pickPhotoIntent.resolveActivity(activity!!.packageManager)?.also {
+        pickPhotoIntent.resolveActivity(requireActivity().packageManager)?.also {
             startActivityForResult(pickPhotoIntent, GALLERY_PHOTO_REQUEST)
         }
 
