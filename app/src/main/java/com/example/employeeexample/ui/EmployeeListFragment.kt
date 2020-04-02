@@ -113,7 +113,7 @@ class EmployeeListFragment : Fragment() {
         Intent(Intent.ACTION_GET_CONTENT).also { readFileIntent ->
             readFileIntent.addCategory(Intent.CATEGORY_OPENABLE)
             readFileIntent.type = "text/*"
-            readFileIntent.resolveActivity(activity!!.packageManager)?.also {
+            readFileIntent.resolveActivity(requireActivity().packageManager)?.also {
                 startActivityForResult(readFileIntent, READ_FILE_REQUEST)
             }
         }
@@ -121,7 +121,7 @@ class EmployeeListFragment : Fragment() {
 
     private suspend fun readFromFile(uri: Uri){
         try {
-            activity!!.applicationContext.contentResolver.openFileDescriptor(uri, "r")?.use {
+            requireActivity().contentResolver.openFileDescriptor(uri, "r")?.use {
                 withContext(Dispatchers.IO) {
                     FileInputStream(it.fileDescriptor).use {
                         parseCSVFile(it)
@@ -153,9 +153,9 @@ class EmployeeListFragment : Fragment() {
         var csvFile: File? = null
         withContext(Dispatchers.IO) {
             csvFile = try {
-                createFile(activity!!,"Documents", "csv")
+                createFile(requireActivity(),"Documents", "csv")
             } catch (ex: IOException) {
-                Toast.makeText(activity!!, getString(R.string.file_create_error, ex.message),
+                Toast.makeText(requireActivity(), getString(R.string.file_create_error, ex.message),
                     Toast.LENGTH_SHORT). show()
                 null
             }
@@ -172,7 +172,7 @@ class EmployeeListFragment : Fragment() {
         withContext(Dispatchers.Main){
             csvFile?.let{
                 val uri = FileProvider.getUriForFile(
-                    activity!!, BuildConfig.APPLICATION_ID + ".fileprovider",
+                    requireActivity(), BuildConfig.APPLICATION_ID + ".fileprovider",
                     it)
                 launchFile(uri, "csv")
             }
@@ -184,10 +184,10 @@ class EmployeeListFragment : Fragment() {
         val intent = Intent(Intent.ACTION_VIEW)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         intent.setDataAndType(uri, mimeType)
-        if(intent.resolveActivity(activity!!.packageManager) != null){
+        if(intent.resolveActivity(requireActivity().packageManager) != null){
             startActivity(intent)
         } else{
-            Toast.makeText(activity!!, getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
+            Toast.makeText(requireActivity(), getString(R.string.no_app_csv), Toast.LENGTH_SHORT).show()
         }
     }
 }
